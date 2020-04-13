@@ -130,3 +130,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+/notebook
+*.mp4
