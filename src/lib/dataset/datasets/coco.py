@@ -47,9 +47,13 @@ class COCO(GenericDataset):
            [6, 12], [5, 11], [11, 12], 
            [12, 14], [14, 16], [11, 13], [13, 15]]
   max_objs = 128
-  def __init__(self, opt, split):
+  def __init__(self, opt, split, data_name=None):
     # load annotations
-    data_dir = os.path.join(opt.data_dir, 'coco')
+    if data_name is None:
+      data_dir = os.path.join(opt.data_dir, 'coco')
+    else:
+      data_dir = os.path.join(opt.data_dir, 'coco', data_name)
+
     img_dir = os.path.join(data_dir, '{}2017'.format(split))
     if opt.trainval:
       split = 'test'

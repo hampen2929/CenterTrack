@@ -13,6 +13,10 @@ from model.data_parallel import DataParallel
 from logger import Logger
 from dataset.dataset_factory import get_dataset
 from trainer import Trainer
+import mlflow
+
+mlflow.set_tracking_uri("../mlruns")
+mlflow.set_experiment('test')
 
 def get_optimizer(opt, model):
   if opt.optim == 'adam':
@@ -31,6 +35,11 @@ def main(opt):
   Dataset = get_dataset(opt.dataset)
   opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
   print(opt)
+
+  # Log our parameters into mlflow
+  for key, value in vars(opt).items():
+    mlflow.log_param(key, value)
+
   if not opt.not_set_cuda_env:
     os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpus_str
   opt.device = torch.device('cuda' if opt.gpus[0] >= 0 else 'cpu')
@@ -50,7 +59,7 @@ def main(opt):
   if opt.val_intervals < opt.num_epochs or opt.test:
     print('Setting up validation data...')
     val_loader = torch.utils.data.DataLoader(
-      Dataset(opt, 'val'), batch_size=1, shuffle=False, num_workers=1,
+      Dataset(opt, 'val', opt.data_name), batch_size=1, shuffle=False, num_workers=1,
       pin_memory=True)
 
     if opt.test:
@@ -60,7 +69,7 @@ def main(opt):
 
   print('Setting up train data...')
   train_loader = torch.utils.data.DataLoader(
-      Dataset(opt, 'train'), batch_size=opt.batch_size, shuffle=True,
+      Dataset(opt, 'train', opt.data_name), batch_size=opt.batch_size, shuffle=True,
       num_workers=opt.num_workers, pin_memory=True, drop_last=True
   )
 
@@ -72,6 +81,7 @@ def main(opt):
     for k, v in log_dict_train.items():
       logger.scalar_summary('train_{}'.format(k), v, epoch)
       logger.write('{} {:8f} | '.format(k, v))
+      mlflow.log_metric('train_{}'.format(k), v, step=epoch)
     if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)), 
                  epoch, model, optimizer)
@@ -82,6 +92,7 @@ def main(opt):
       for k, v in log_dict_val.items():
         logger.scalar_summary('val_{}'.format(k), v, epoch)
         logger.write('{} {:8f} | '.format(k, v))
+        mlflow.log_metric('val_{}'.format(k), v, step=epoch)
     else:
       save_model(os.path.join(opt.save_dir, 'model_last.pth'), 
                  epoch, model, optimizer)
@@ -93,9 +104,9 @@ def main(opt):
       lr = opt.lr * (0.1 ** (opt.lr_step.index(epoch) + 1))
       print('Drop LR to', lr)
       for param_group in optimizer.param_groups:
-          param_group['lr'] = lr
+        param_group['lr'] = lr
   logger.close()
-
+   
 if __name__ == '__main__':
   opt = opts().parse()
   main(opt)

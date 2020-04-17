@@ -194,6 +194,8 @@ class opts(object):
     self.parser.add_argument('--no_color_aug', action='store_true',
                              help='not use the color augmenation '
                                   'from CornerNet')
+    self.parser.add_argument('--data_name', type=str,
+                             help='data_name', default=None)
 
     # Tracking
     self.parser.add_argument('--tracking', action='store_true')

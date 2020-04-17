@@ -73,7 +73,7 @@ def get_images(label_file, image_id, file_name=None):
 
     return file_dict
 
-def get_annotations(shape, image_id, annotation_id, length=30):
+def get_annotations(shape, image_id, annotation_id, length=30, target_labels=None):
     file_dict = {
         'segmentation': [[]],
         'area': None,
@@ -98,7 +98,15 @@ def get_annotations(shape, image_id, annotation_id, length=30):
     bbox = [xmin, ymin, width, height]
     
     label = shape['label']
-    category_id = category_id_dict[label]
+    
+    if isinstance(label, str):
+        if label.isdecimal():
+            category_id = int(label)
+        else:
+            category_id = category_id_dict[label]
+    else:
+        msg = 'label must be str not {}'.format(type(label))
+        raise ValueError(msg)
     
     file_dict['area'] = area
     file_dict['bbox'] = bbox
