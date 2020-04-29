@@ -5,11 +5,14 @@ from glob import glob
 
 category_id_dict = {
 #     'court_edge': 1,
-#     'doubles_lower_left': 2,
-#     'doubles_lower_right': 3,
-#     'doubles_upper_left': 4,
-#     'doubles_upper_right': 5,
-    'ball': 37,
+   
+    'person': 1,
+    'ball': 2,
+    'doubles_upper_right': 3,
+    'doubles_upper_left': 3,
+    'doubles_lower_left': 3,
+    'doubles_lower_right': 3,
+    
 }
 
 
@@ -73,7 +76,7 @@ def get_images(label_file, image_id, file_name=None):
 
     return file_dict
 
-def get_annotations(shape, image_id, annotation_id, length=30):
+def get_annotations(shape, image_id, annotation_id, target_labels=None):
     file_dict = {
         'segmentation': [[]],
         'area': None,
@@ -83,22 +86,25 @@ def get_annotations(shape, image_id, annotation_id, length=30):
         'category_id': None,
         'id': 999
     }
-    point = shape['points'][0]
-    
-    x, y = point
-    xmin = x - length / 2
-    ymin = y - length / 2
-    xmax = x + length / 2
-    ymax = y + length / 2
+    point = shape['points']
+    xmin, ymin = point[0]
+    xmax, ymax = point[1]
     
     width = xmax - xmin
     height = ymax - ymin
     area = width * height
     
     bbox = [xmin, ymin, width, height]
-    
     label = shape['label']
-    category_id = category_id_dict[label]
+        
+    if isinstance(label, str):
+        if label.isdecimal():
+            category_id = int(label)
+        else:
+            category_id = category_id_dict[label]
+    else:
+        msg = 'label must be str not {}'.format(type(label))
+        raise ValueError(msg)
     
     file_dict['area'] = area
     file_dict['bbox'] = bbox
@@ -117,4 +123,4 @@ def get_categories():
         {'supercategory': 'court_edge', 'id': 4, 'name': 'doubles_upper_left'},
         {'supercategory': 'court_edge', 'id': 5, 'name': 'doubles_upper_right'}
     ]
-    return categories
+    return 
