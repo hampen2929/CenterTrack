@@ -9,7 +9,12 @@ category_id_dict = {
 #     'doubles_lower_right': 3,
 #     'doubles_upper_left': 4,
 #     'doubles_upper_right': 5,
+    'person': 1,
     'ball': 37,
+    '5': 5,
+    '6': 5,
+    '7': 5,
+    '8': 5,
 }
 
 
