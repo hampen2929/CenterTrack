@@ -9,6 +9,7 @@ import json
 import os
 
 from .generic_dataset import GenericDataset
+from .datasets.tennis import Tennis
 from .datasets.coco import COCO
 from .datasets.kitti import KITTI
 from .datasets.coco_hp import COCOHP
@@ -21,6 +22,7 @@ from .datasets.kitti_tracking import KITTITracking
 dataset_factory = {
   'custom': GenericDataset,
   'coco': COCO,
+  'tennis': Tennis,
   'kitti': KITTI,
   'coco_hp': COCOHP,
   'mot': MOT,

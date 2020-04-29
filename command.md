@@ -38,8 +38,8 @@ python ./src/demo.py tracking --load_model ./models/coco_tracking.pth --demo ./v
 python ./src/demo.py tracking --load_model ./models/ball_tracking.pth --demo ./videos/match_01_part.mp4 --track_thresh 0.1
 python ./src/demo.py tracking --load_model ./models/ball_tracking2.pth --demo ./videos/match_01_part.mp4 --track_thresh 0.1
 
-python ./src/demo.py tracking --load_model ./exp/tracking/coco_tracking/model_last.pth --demo ./videos/match_01_part.mp4 --track_thresh 0.1
 
+python ./src/demo.py tracking --load_model ./exp/tracking/coco_tracking/model_last.pth --demo ./videos/match_01_part.mp4 --track_thresh 0.1
 python ./src/demo.py tracking, multi_pose --load_model ./models/coco_pose_tracking.pth --demo ./videos/match_01_part.mp4 --track_thresh 0.1
 
 
@@ -84,3 +84,9 @@ pip install -r requirements.txt --user
 
 %cd "/content/drive/My Drive/workspace/CenterTrack"
 !bash ./experiments/coco_tracking.sh 
+
+# mlflow
+export PATH=$PATH:/home/ubuntu/.local/bin/
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+mlflow ui
