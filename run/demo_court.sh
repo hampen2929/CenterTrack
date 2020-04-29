@@ -17,4 +17,3 @@ tracking \
 # --load_model ../models/centernet_court.pth \
 # --demo ../videos/match_01_part.mp4 \
 # --track_thresh 0.1
-
