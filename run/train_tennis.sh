@@ -1,10 +1,10 @@
 cd src
+# --dataset tennis \
 
 python main.py \
 tracking \
 --exp_id tennis_dataset_test \
 --load_model ../models/coco_tracking.pth \
---dataset tennis \
 --gpus 0 \
 --batch_size 2 \
 --lr 5e-5 \
@@ -18,6 +18,6 @@ tracking \
 --fp_disturb 0.1 \
 --val_intervals 1 \
 --save_all \
---data_name tennis_all
+--data_name tennis3
 
 # --num_classes 1
