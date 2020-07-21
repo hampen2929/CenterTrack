@@ -29,6 +29,7 @@ def get_optimizer(opt, model):
     assert 0, opt.optim
   return optimizer
 
+
 def main(opt):
   torch.manual_seed(opt.seed)
   torch.backends.cudnn.benchmark = not opt.not_cuda_benchmark and not opt.test
@@ -74,6 +75,8 @@ def main(opt):
   )
 
   print('Starting training...')
+  best = 1e10
+  best_epoch = 1e10
   for epoch in range(start_epoch + 1, opt.num_epochs + 1):
     mark = epoch if opt.save_all else 'last'
     log_dict_train, _ = trainer.train(epoch, train_loader)
@@ -93,6 +96,12 @@ def main(opt):
         logger.scalar_summary('val_{}'.format(k), v, epoch)
         logger.write('{} {:8f} | '.format(k, v))
         mlflow.log_metric('val_{}'.format(k), v, step=epoch)
+      if log_dict_val[opt.metric] < best:
+        best = log_dict_val[opt.metric]
+        best_epoch = epoch
+        save_model(os.path.join(opt.save_dir, 
+                                'model_best.pth'),
+                                epoch, model)
     else:
       save_model(os.path.join(opt.save_dir, 'model_last.pth'), 
                  epoch, model, optimizer)
@@ -100,13 +109,23 @@ def main(opt):
     if epoch in opt.save_point:
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(epoch)), 
                  epoch, model, optimizer)
+    # early stopping
+    if isinstance(opt.early_stopping, int):
+      if epoch - best_epoch > opt.early_stopping:
+        msg = 'Stopped {} epoch. Best epoch is {}, score is {}.'.format(epoch, best_epoch, best)
+        print(msg)
+        logger.write(msg)
+        break
     if epoch in opt.lr_step:
       lr = opt.lr * (0.1 ** (opt.lr_step.index(epoch) + 1))
       print('Drop LR to', lr)
       for param_group in optimizer.param_groups:
         param_group['lr'] = lr
+    
   logger.close()
-   
+
+  
+  
 if __name__ == '__main__':
   opt = opts().parse()
   main(opt)
