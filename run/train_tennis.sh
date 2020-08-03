@@ -1,4 +1,5 @@
-exp_id='ex'
+# exp_id='tennis3_dlav0_34'
+exp_id='tennis_dataset_20200721_002'
 
 cd src
 
@@ -39,7 +40,9 @@ tracking \
 --fp_disturb 0.1 \
 --val_intervals 1 \
 --save_all \
---data_name tennis3
+--data_name tennis_dataset_20200721 \
+--data_dir "/content/workspace/CenterTrack/data/"
+
 # --arch dlav0_34 \
 
 # --print_iter 1 \
