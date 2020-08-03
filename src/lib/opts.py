@@ -55,6 +55,8 @@ class opts(object):
                              help='disable progress bar and print to screen.')
     self.parser.add_argument('--save_all', action='store_true',
                              help='save model to disk every 5 epochs.')
+    self.parser.add_argument('--metric', default='tracking', 
+                             help='main metric to save best model')
     self.parser.add_argument('--vis_thresh', type=float, default=0.3,
                              help='visualization threshold.')
     self.parser.add_argument('--debugger_theme', default='white', 
@@ -64,10 +66,10 @@ class opts(object):
     self.parser.add_argument('--save_img_suffix', default='', help='')
     self.parser.add_argument('--skip_first', type=int, default=-1, help='')
     self.parser.add_argument('--save_video', action='store_true')
-    self.parser.add_argument('--save_framerate', type=int, default=30)
+    self.parser.add_argument('--save_framerate', type=int, default=None)
     self.parser.add_argument('--resize_video', action='store_true')
-    self.parser.add_argument('--video_h', type=int, default=512, help='')
-    self.parser.add_argument('--video_w', type=int, default=512, help='')
+    self.parser.add_argument('--video_h', type=int, default=None, help='')
+    self.parser.add_argument('--video_w', type=int, default=None, help='')
     self.parser.add_argument('--transpose_video', action='store_true')
     self.parser.add_argument('--show_track_color', action='store_true')
     self.parser.add_argument('--not_show_bbox', action='store_true')
@@ -139,6 +141,8 @@ class opts(object):
     self.parser.add_argument('--use_kpt_center', action='store_true')
     self.parser.add_argument('--add_05', action='store_true')
     self.parser.add_argument('--dense_reg', type=int, default=1, help='')
+    self.parser.add_argument('--early_stopping', type=int, default=None, help='')
+    
 
     # test
     self.parser.add_argument('--flip_test', action='store_true',
@@ -172,7 +176,7 @@ class opts(object):
     self.parser.add_argument('--kitti_split', default='3dop',
                              help='different validation split for kitti: '
                                   '3dop | subcnn')
-
+    
     # dataset
     self.parser.add_argument('--not_rand_crop', action='store_true',
                              help='not use the random crop data augmentation'
@@ -196,6 +200,8 @@ class opts(object):
                                   'from CornerNet')
     self.parser.add_argument('--data_name', type=str,
                              help='data_name', default=None)
+    self.parser.add_argument('--data_dir', type=str,
+                             help='data_dir', default=None)
 
     # Tracking
     self.parser.add_argument('--tracking', action='store_true')
@@ -307,7 +313,8 @@ class opts(object):
 
     # log dirs
     opt.root_dir = os.path.join(os.path.dirname(__file__), '..', '..')
-    opt.data_dir = os.path.join(opt.root_dir, 'data')
+    if opt.data_dir is None:
+      opt.data_dir = os.path.join(opt.root_dir, 'data')
     opt.exp_dir = os.path.join(opt.root_dir, 'exp', opt.task)
     opt.save_dir = os.path.join(opt.exp_dir, opt.exp_id)
     opt.debug_dir = os.path.join(opt.save_dir, 'debug')
